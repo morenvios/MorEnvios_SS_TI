@@ -1,4 +1,4 @@
-<h1 align="center">Hola, Soy Stiver Gerrard Vlencia Marin</h1>
+<h1 align="center">Hola, Soy Stiver Gerrard Valencia Marin</h1>
 <h3 align="center">Apasionado en programación web</h3>
 
 <h3 align="left">Connect with me:</h3>
