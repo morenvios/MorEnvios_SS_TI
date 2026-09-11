@@ -2,6 +2,7 @@
 <h3 align="center">Apasionado en programación web</h3>
 
 <h3 align="left">Connect with me:</h3>
+<a href="stivergerrard23@gmail.com">stivergerrard23@gmail.com</a>
 <p align="left">
 </p>
 
