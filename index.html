@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<!-- lang="es" le dice al navegador y a los lectores de pantalla en qué idioma está la página -->
+<!-- lang="es" dice en qué idioma está la página -->
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <!-- viewport: obligatorio para que el sitio se adapte a móvil. Sin esto, no hay responsive. -->
+  <!-- viewport: obligatorio para que el sitio se adapte a móvil. Sin esto, no hay responsive -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MorEnvíos — Logística y envíos en Morelos</title>
   <meta name="description" content="Servicios de logística, recolección y entregas en el estado de Morelos.">
-  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
 
-  <!-- Enlace para saltar al contenido: ayuda a quien navega con teclado. Criterio de accesibilidad. -->
+  <!-- Enlace para saltar al contenido: ayuda a quien navega con teclado. Criterio de accesibilidad -->
   <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
 
-  <!-- <header> = encabezado de la página (logo + navegación) -->
+  <!-- <header> = encabezado de la página -->
   <header class="cabecera">
     <div class="contenedor cabecera__interior">
       <a class="logo" href="index.html">MorEnvíos</a>
 
-      <!-- <nav> = bloque de navegación. -->
+      <!-- <nav> = bloque de navegación -->
       <nav aria-label="Navegación principal">
         <ul class="menu">
           <!-- aria-current="page" marca en qué página estás. Lo lee el lector de pantalla. -->
@@ -32,14 +32,14 @@
     </div>
   </header>
 
-  <!-- <main> = contenido principal. -->
+  <!-- contenido principal -->
   <main id="contenido">
 
     <!-- Sección hero: lo primero que ve el usuario -->
     <section class="hero">
       <div class="contenedor">
         <!-- Solo un <h1> por página: es el título principal -->
-        <h1>Tu envío llega. Punto.</h1>
+        <h1>Tu envío llega.</h1>
         <p class="hero__texto">
           Recolección, logística y entregas en todo el estado de Morelos,
           con seguimiento real de cada paquete.
@@ -53,7 +53,7 @@
       <div class="contenedor">
         <h2 id="titulo-servicios">Qué hacemos</h2>
 
-        <!-- Una lista de servicios ES una lista: por eso <ul>, no <div> sueltos -->
+        <!-- ES una lista: por eso <ul>, no <div> sueltos -->
         <ul class="tarjetas">
           <li class="tarjeta">
             <h3>Paquetería</h3>
@@ -88,7 +88,7 @@
 
   </main>
 
-  <!-- <footer> = pie de página del sitio -->
+  <!--pie-->
   <footer class="pie">
     <div class="contenedor">
       <p>MorEnvíos — Servicios de logística, recolección y entregas del estado de Morelos.</p>

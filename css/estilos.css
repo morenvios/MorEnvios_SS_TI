@@ -27,10 +27,10 @@
   --ancho-max: 1100px;
 }
 
-/* ---------- 2. BASE ---------- */
+/*BASE*/
 
-/* border-box hace que padding y border NO aumenten el ancho.
-   Evita desbordamientos horizontales. */
+/* border-box hace que padding y border no aumenten el ancho
+   Evita desbordamientos horizontales */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -65,8 +65,7 @@ p { max-width: 65ch; }
 
 a { color: var(--color-verde-oscuro); }
 
-/* FOCO VISIBLE: criterio de aceptación obligatorio.
-   Nunca uses outline:none sin poner un reemplazo. */
+/* FOCO VISIBLE: criterio de aceptación obligatorio*/
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -75,12 +74,12 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Respeta a quien pidió menos animación en su sistema */
+
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
 
-/* ---------- LAYOUT ---------- */
+/* LAYOUT */
 
 .contenedor {
   width: 100%;
@@ -97,7 +96,7 @@ textarea:focus-visible {
   background: var(--color-fondo-alt);
 }
 
-/* ---------- ACCESIBILIDAD ---------- */
+/* - ACCESIBILIDAD - */
 
 /* Enlace "saltar al contenido": oculto hasta que se navega con Tab */
 .salto-contenido {
@@ -112,7 +111,7 @@ textarea:focus-visible {
   color: #fff;
 }
 
-/* ---------- CABECERA ---------- */
+/* - CABECERA -*/
 
 .cabecera {
   border-bottom: 1px solid var(--color-borde);
@@ -171,7 +170,7 @@ textarea:focus-visible {
   margin-bottom: var(--esp-3);
 }
 
-/* ---------- COMPONENTES ---------- */
+/* COMPONENTES */
 
 .boton {
   display: inline-block;
@@ -199,7 +198,7 @@ textarea:focus-visible {
   color: #fff;
 }
 
-/* Rejilla de tarjetas.
+/* Rejilla de tarjetas
    auto-fit + minmax = se reacomoda sola sin media queries. */
 .tarjetas {
   display: grid;
@@ -223,7 +222,7 @@ textarea:focus-visible {
   margin-bottom: 0;
 }
 
-/* ---------- FORMULARIO (para contacto.html) ---------- */
+/* FORMULARIO (para contacto.html) */
 
 .campo {
   display: flex;
