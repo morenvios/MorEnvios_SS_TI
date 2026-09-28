@@ -107,6 +107,23 @@
           </tbody>
         </table>
 
+        <label for="filtro-estado">Estado:</label>
+        <select id="filtro-estado">
+          <option value="">Todos</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en_transito">En tránsito</option>
+          <option value="entregado">Entregado</option>
+          <option value="retrasado">Retrasado</option>
+        </select>
+
+        <label for="buscar">Buscar:</label>
+        <input type="text" id="buscar" placeholder="ID, cliente o destino...">
+        <label for="ordenar">Ordenar por:</label>
+        <select id="ordenar">
+          <option value="">Sin orden</option>
+          <option value="fecha">Fecha</option>
+        </select>
+
       </div>
     </section>
 
