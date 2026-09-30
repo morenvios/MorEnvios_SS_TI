@@ -1,7 +1,8 @@
 let todosLosEnvios = [];
 async function cargarEnvios() {
+  document.getElementById('cuerpo-tabla').innerHTML = '<tr><td colspan="5">Cargando envíos...</td></tr>';
   try {
-    const respuesta = await fetch('data/envios.json');
+    const respuesta = await fetch('../data/envios.json');
 
     if (!respuesta.ok) {
       throw new Error('No se pudo cargar el archivo de envíos');
