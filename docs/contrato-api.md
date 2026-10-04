@@ -34,11 +34,11 @@ Un producto tiene los siguientes campos, todos obligatorios:
 - **409**: conflicto, ya existe un producto con ese `id`.
 - **422**: los datos enviados no son válidos (campo faltante o tipo incorrecto).
 
-## Reglas de negocio (a implementar el miércoles)
+## Reglas de negocio 
 
-- El `id` no puede repetirse.
-- El `precio` no puede ser negativo.
-- El `stock` no puede ser negativo.
+- [x] El `id` no puede repetirse.
+- [x] El `precio` no puede ser negativo.
+- [x] El `stock` no puede ser negativo.
 
 ## Ejemplo de producto (cuerpo JSON)
 
@@ -57,7 +57,7 @@ Un producto tiene los siguientes campos, todos obligatorios:
 
 - [x] `GET /`
 - [x] `GET /productos`
-- [x] `POST /productos` (responde 200; falta pasar a 201 y validar `id` repetido)
+- [x] `POST /productos` (responde 201, rechaza `id` repetido con 409 y valores negativos con 422)
 - [x] `GET /productos/{id}`
 - [x] `PUT /productos/{id}`
 - [x] `DELETE /productos/{id}`
