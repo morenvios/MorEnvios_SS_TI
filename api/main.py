@@ -1,14 +1,14 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from fastapi import FastAPI, HTTPException
 
 class Producto(BaseModel):
     id: str
     nombre: str
     categoria: str
-    precio: float
+    precio: float = Field(ge=0)
     ubicacion: str
-    stock: int
+    stock: int = Field(ge=0)
 
 app = FastAPI()
 inventario = [] 
@@ -17,8 +17,11 @@ inventario = []
 def inicio():
     return {"mensaje": "API de inventario funcionando"}
 
-@app.post("/productos")
+@app.post("/productos", status_code=201)
 def crear_producto(producto: Producto):
+    for existente in inventario:
+        if existente.id == producto.id:
+            raise HTTPException(status_code=409, detail="Ya existe un producto con ese id")
     inventario.append(producto)
     return producto
 

@@ -57,7 +57,7 @@ Un producto tiene los siguientes campos, todos obligatorios:
 
 - [x] `GET /`
 - [x] `GET /productos`
-- [x] `POST /productos` (responde 200; falta pasar a 201 y validar `id` repetido)
+- [x] `POST /productos`
 - [x] `GET /productos/{id}`
 - [x] `PUT /productos/{id}`
 - [x] `DELETE /productos/{id}`
