@@ -36,10 +36,8 @@ La API de inventario de la semana 4 guarda los productos en una lista en memoria
 - No se corrompe el inventario ante una operación inválida.
 - La instalación se reproduce con las instrucciones del README.
 
-## Preguntas abiertas (a decidir en equipo)
+  ## Decisiones tomadas
 
-
-- ¿Se necesita registrar quién hizo cada movimiento?
-R: Si para registrar movimientos/modificaciones
-- ¿Un producto puede cambiar de categoría con el tiempo?
-R:Probablemente si
+- Movimientos: se guarda historial permanente, porque permite verificar el stock y es la base de las transacciones.
+- Autor del movimiento: no se registra en esta versión, para evitar usuarios y autenticación. Queda como mejora futura.
+- Cambio de categoría: se actualiza la referencia del producto, sin historial de cambios.
