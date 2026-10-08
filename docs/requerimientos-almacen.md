@@ -41,3 +41,4 @@ La API de inventario de la semana 4 guarda los productos en una lista en memoria
 - Movimientos: se guarda historial permanente, porque permite verificar el stock y es la base de las transacciones.
 - Autor del movimiento: no se registra en esta versión, para evitar usuarios y autenticación. Queda como mejora futura.
 - Cambio de categoría: se actualiza la referencia del producto, sin historial de cambios.
+- Motor de base de datos: SQLite, porque viene incluido con Python, no requiere instalar ni configurar un servidor y mantiene la instalación reproducible en una semana. El SQL es casi idéntico al de PostgreSQL. Las claves foráneas se activan con PRAGMA foreign_keys = ON.
