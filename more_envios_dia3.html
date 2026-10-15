@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>More Envíos · Día 3</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f8f7;--card:#fff;--tx:#1b2a24;--mu:#5b6b64;--ac:#2e5e4e;--ln:#d5ddd9;--ok:#1f7a45;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121816;--card:#1a2420;--tx:#e8efec;--mu:#9fb0a8;--ac:#6fc3a3;--ln:#2f3d37;--ok:#6fd49b;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#121816;--card:#1a2420;--tx:#e8efec;--mu:#9fb0a8;--ac:#6fc3a3;--ln:#2f3d37;--ok:#6fd49b;--bad:#ff8a80}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,sans-serif}
+header,main{max-width:860px;margin:0 auto;padding:12px 16px}
+h1{font-size:1.3rem;margin:.2em 0}h2{font-size:1.1rem;margin:0 0 .6em}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+button,select,input{font:inherit;color:inherit}
+nav button{padding:8px 14px;border:1px solid var(--ln);background:var(--card);border-radius:8px;cursor:pointer}
+nav button[aria-current=true]{background:var(--ac);color:#fff;border-color:var(--ac)}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:12px}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%}th,td{padding:7px 10px;border-bottom:1px solid var(--ln);text-align:left;white-space:nowrap}
+th{color:var(--mu);font-weight:600;font-size:.9rem}
+label{display:block;font-weight:600;margin:.6em 0 .2em}
+input,select{width:100%;padding:9px;border:1px solid var(--ln);border-radius:8px;background:var(--bg)}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.btn{padding:9px 16px;border:0;border-radius:8px;background:var(--ac);color:#fff;cursor:pointer;margin-top:12px}
+.btn.s{background:transparent;color:var(--bad);border:1px solid var(--bad);padding:4px 10px;margin:0}
+.err{color:var(--bad);min-height:1.3em;margin:.4em 0 0}.mu{color:var(--mu)}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.st{padding:4px 10px;border-radius:99px;border:1px solid var(--ln);font-size:.85rem;color:var(--mu)}
+.st.on{background:var(--ac);color:#fff;border-color:var(--ac)}.st.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+.tot td{border:0;padding:3px 10px}.tot tr:last-child td{font-weight:700;font-size:1.1rem;border-top:2px solid var(--ln)}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:var(--card);padding:6px}
+</style></head><body>
+<a class="skip" href="#main">Saltar al contenido</a>
+<header><h1>📦 More Envíos · Día 3</h1><p class="mu" style="margin:0">Pedido simulado e impacto en repartidores (práctica con datos de ejemplo)</p>
+<nav id="nav" aria-label="Secciones"></nav></header>
+<main id="main" tabindex="-1"></main>
+<script>
+const TARIFAS=[["estandar",0,5,90],["estandar",5,20,150],["estandar",20,70,280],["express",0,5,160],["express",5,20,260],["express",20,70,450]];
+const ZONAS=["Centro CDMX","Norte CDMX","Sur CDMX","Centro GDL","Centro MTY"];
+const SUC=["Zócalo","Indios Verdes","Coyoacán","Guadalajara Centro","Monterrey Centro"];
+const REP=[["Rafael Ortega",0,"disponible"],["Elena Vargas",0,"ocupado"],["Marcos Lira",1,"ocupado"],["Karla Beltrán",2,"ocupado"],["Iván Solís",3,"ocupado"],["Diana Prado",4,"disponible"]];
+const E=[["MEV-2026-000001","Calle Tula 45, Roma Norte, CDMX","Av. Insurgentes Norte 1250, CDMX",8.5,150,"entregado","2026-09-20"],
+["MEV-2026-000002","Av. Revolución 880, San Ángel, CDMX","Sucursal Coyoacán",2,90,"entregado","2026-09-21"],
+["MEV-2026-000003","Calle Hidalgo 12, Tlalpan, CDMX","Calle Bolívar 77, Centro, CDMX",1.2,160,"en_reparto","2026-10-05"],
+["MEV-2026-000004","Av. Chapultepec 300, Guadalajara","Calle Norte 14, Gustavo A. Madero, CDMX",25,280,"en_transito","2026-10-04"],
+["MEV-2026-000005","Calle Zaragoza 150, Monterrey","Sucursal Monterrey Centro",12,260,"en_transito","2026-10-04"],
+["MEV-2026-000006","Av. Constitución 700, Monterrey","Av. Vallarta 2100, Guadalajara",4.5,90,"recolectado","2026-10-05"],
+["MEV-2026-000007","Calle Tula 45, Roma Norte, CDMX","Calle Donceles 30, Centro, CDMX",0.8,90,"creado","2026-10-06"],
+["MEV-2026-000008","Calle Madero 98, Centro, CDMX","Sucursal Guadalajara Centro",30,450,"entregado","2026-09-15"],
+["MEV-2026-000009","Calle Reforma 55, Coyoacán, CDMX","Calle Isabel la Católica 8, CDMX",15,150,"fallido","2026-09-30"],
+["MEV-2026-000010","Av. Revolución 880, San Ángel, CDMX","Calle Poniente 112, CDMX",3,160,"creado","2026-10-06"],
+["MEV-2026-000011","Calle Hidalgo 12, Tlalpan, CDMX","Calle Cuauhtémoc 60, Coyoacán, CDMX",7.5,260,"recolectado","2026-10-06"],
+["MEV-2026-000012","Calle Zaragoza 150, Monterrey","Calle Hospital 33, Guadalajara",18,150,"entregado","2026-09-25"]];
+const FLUJO=["creado","recolectado","en_transito","en_reparto","entregado"];
+const IVA=0.16,KEY="more-envios-carrito-v1",KS="more-envios-estado-v1";
+const $=s=>document.querySelector(s),m=n=>"$"+n.toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let cart=[],view="catalogo",guia="";
+try{cart=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){cart=[]}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(cart))}catch(e){}};
+let S={rep:REP.map(r=>r[2]),pedidos:[],n:12},ok="";
+try{const g=JSON.parse(localStorage.getItem(KS));if(g&&g.rep&&g.rep.length===REP.length)S=g}catch(e){}
+const saveS=()=>{try{localStorage.setItem(KS,JSON.stringify(S))}catch(e){}};
+const tarifa=(t,p)=>TARIFAS.find(x=>x[0]===t&&p>x[1]&&p<=x[2]);
+const VIEWS=[["catalogo","Catálogo"],["detalle","Detalle de envío"],["carrito","Carrito"],["repartidores","Repartidores"],["pedidos","Mis pedidos"]];
+function nav(){$("#nav").innerHTML=VIEWS.map(([k,l])=>`<button data-v="${k}" ${view===k?'aria-current="true"':""}>${l}${k==="carrito"?` (${cart.length})`:""}</button>`).join("");
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{view=b.dataset.v;ok="";render();$("#main").focus()})}
+function catalogo(){return `<section class="card"><h2>Tarifas por servicio y peso</h2><div class="tw"><table><tr><th>Servicio</th><th>Rango de peso</th><th>Costo</th></tr>${TARIFAS.map(t=>`<tr><td>${t[0]==="express"?"Exprés":"Estándar"}</td><td>${t[1]} – ${t[2]} kg</td><td>${m(t[3])}</td></tr>`).join("")}</table></div><p class="mu">El rango incluye el peso máximo y excluye el mínimo.</p></section>
+<section class="card"><h2>Zonas y sucursales</h2><p><b>Zonas:</b> ${ZONAS.join(", ")}.</p><p><b>Sucursales:</b> ${SUC.join(", ")}.</p></section>
+<section class="card"><h2>Envíos de ejemplo (${E.length})</h2><div class="tw"><table><tr><th>Guía</th><th>Peso</th><th>Costo</th><th>Estado</th></tr>${E.map(e=>`<tr><td><a href="#" data-g="${e[0]}">${e[0]}</a></td><td>${e[3]} kg</td><td>${m(e[4])}</td><td>${e[5]}</td></tr>`).join("")}</table></div></section>`}
+function detalle(){const e=E.concat(S.pedidos.flatMap(q=>q.items.map(i=>i.e))).find(x=>x[0]===guia.trim().toUpperCase());let out=`<section class="card"><h2>Consultar una guía</h2><label for="g">Número de guía</label><input id="g" value="${esc(guia)}" placeholder="MEV-2026-000001" aria-describedby="ge"><button class="btn" id="bg">Buscar</button><p class="err" id="ge" role="alert">${guia&&!e?"No existe esa guía. Revisa el formato MEV-AAAA-NNNNNN.":""}</p></section>`;
+if(e){const f=e[5]==="fallido";const idx=f?3:FLUJO.indexOf(e[5]);
+out+=`<section class="card"><h2>${e[0]}</h2><div class="tw"><table><tr><th>Origen</th><td>${esc(e[1])}</td></tr><tr><th>Destino</th><td>${esc(e[2])}</td></tr><tr><th>Peso</th><td>${e[3]} kg</td></tr><tr><th>Costo</th><td>${m(e[4])}</td></tr><tr><th>Creado</th><td>${e[6]}</td></tr></table></div>
+<div class="steps" aria-label="Avance del envío">${FLUJO.map((s,i)=>`<span class="st ${i<=idx&&!(f&&i===3)?"on":""}">${s}</span>`).join("")}${f?'<span class="st bad">fallido (se reintenta)</span>':""}</div></section>`}return out}
+function carrito(){const sub=cart.reduce((a,x)=>a+x.costo,0),iva=sub*IVA;
+let out=(ok?`<section class="card" role="status"><b style="color:var(--ok)">${esc(ok)}</b></section>`:"")+`<section class="card"><h2>Agregar un envío</h2><div class="row"><div><label for="o">Origen</label><input id="o"></div><div><label for="d">Destino</label><input id="d"></div><div><label for="p">Peso (kg)</label><input id="p" type="number" step="0.1" min="0.1" max="70" inputmode="decimal"></div><div><label for="s">Servicio</label><select id="s"><option value="estandar">Estándar</option><option value="express">Exprés</option></select></div><div><label for="z">Zona de recolección</label><select id="z">${ZONAS.map((z,i)=>`<option value="${i}">${z}</option>`).join("")}</select></div></div><button class="btn" id="add">Agregar al carrito</button><p class="err" id="ce" role="alert"></p></section>`;
+out+=`<section class="card"><h2>Tu carrito</h2>${cart.length?`<div class="tw"><table><tr><th>Ruta</th><th>Peso</th><th>Servicio</th><th>Costo</th><th></th></tr>${cart.map((x,i)=>`<tr><td>${esc(x.o)} → ${esc(x.d)}<br><span class="mu">Recolecta: ${ZONAS[x.z||0]}</span></td><td>${x.p} kg</td><td>${x.s==="express"?"Exprés":"Estándar"}</td><td>${m(x.costo)}</td><td><button class="btn s" data-r="${i}" aria-label="Quitar envío ${i+1}">Quitar</button></td></tr>`).join("")}</table></div>
+<table class="tot" style="max-width:320px;margin:12px 0 0 auto"><tr><td>Subtotal</td><td>${m(sub)}</td></tr><tr><td>IVA 16 %</td><td>${m(iva)}</td></tr><tr><td>Total</td><td>${m(sub+iva)}</td></tr></table><h2 style="margin-top:18px">Confirmar pedido (pago simulado)</h2><div class="row"><div><label for="cn">Nombre</label><input id="cn" autocomplete="name"></div><div><label for="cc">Correo</label><input id="cc" type="email" autocomplete="email"></div></div><button class="btn" id="ok">Confirmar pedido</button> <button class="btn" id="clr" style="background:transparent;color:var(--bad);border:1px solid var(--bad)">Vaciar carrito</button><p class="err" id="oe" role="alert"></p>`:'<p class="mu">Aún no hay envíos en el carrito.</p>'}</section>`;return out}
+function repartidores(){const l=S.rep.filter(x=>x==="disponible").length;return `<section class="card"><h2>Repartidores (existencias)</h2><p>${l} de ${REP.length} disponibles. Cada envío del pedido ocupa un repartidor de su zona de recolección.</p><div class="tw"><table><tr><th>Repartidor</th><th>Zona</th><th>Estado</th></tr>${REP.map((r,i)=>`<tr><td>${r[0]}</td><td>${ZONAS[r[1]]}</td><td>${S.rep[i]}</td></tr>`).join("")}</table></div><button class="btn" id="rst">Reiniciar demo</button></section>`}
+function pedidos(){return `<section class="card"><h2>Mis pedidos</h2>${S.pedidos.length?S.pedidos.map(q=>`<div class="card"><b>${q.id}</b> · ${q.fecha} · ${esc(q.nombre)}<div class="tw"><table><tr><th>Guía</th><th>Ruta</th><th>Repartidor</th><th>Costo</th></tr>${q.items.map(i=>`<tr><td><a href="#" data-g="${i.e[0]}">${i.e[0]}</a></td><td>${esc(i.o)} → ${esc(i.d)}</td><td>${i.rep}</td><td>${m(i.costo)}</td></tr>`).join("")}</table></div><p>Total pagado: <b>${m(q.total)}</b></p></div>`).join(""):'<p class="mu">Todavía no hay pedidos.</p>'}</section>`}
+function confirmar(){const er=$("#oe"),n=$("#cn").value.trim(),c=$("#cc").value.trim();
+if(!cart.length){er.textContent="El carrito está vacío.";return}
+if(!n||!/^\S+@\S+\.\S+$/.test(c)){er.textContent="Escribe tu nombre y un correo válido.";return}
+const rep=S.rep.slice(),asg=[];
+for(const x of cart){const i=REP.findIndex((r,j)=>r[1]===(x.z||0)&&rep[j]==="disponible");
+if(i<0){er.textContent="No hay repartidor disponible en "+ZONAS[x.z||0]+". No se creó ningún pedido.";return}
+rep[i]="ocupado";asg.push(i)}
+const f=new Date().toISOString().slice(0,10);let k=S.n;
+const items=cart.map((x,j)=>{k++;const g="MEV-2026-"+String(k).padStart(6,"0");return{...x,rep:REP[asg[j]][0],e:[g,x.o,x.d,x.p,x.costo,"creado",f]}});
+const sub=cart.reduce((a,x)=>a+x.costo,0);
+S.rep=rep;S.n=k;S.pedidos.unshift({id:"PED-"+String(S.pedidos.length+1).padStart(4,"0"),fecha:f,nombre:n,correo:c,items,total:sub*(1+IVA)});
+saveS();cart=[];save();ok="Pedido confirmado: "+items.map(i=>i.e[0]).join(", ");render()}
+function render(){nav();$("#main").innerHTML={catalogo,detalle,carrito,repartidores,pedidos}[view]();
+if($("#rst"))$("#rst").onclick=()=>{S={rep:REP.map(r=>r[2]),pedidos:[],n:12};saveS();render()};
+if($("#ok"))$("#ok").onclick=confirmar;
+document.querySelectorAll("[data-g]").forEach(a=>a.onclick=ev=>{ev.preventDefault();guia=a.dataset.g;view="detalle";render()});
+if($("#bg"))$("#bg").onclick=()=>{guia=$("#g").value;render()};
+if($("#g"))$("#g").onkeydown=ev=>{if(ev.key==="Enter")$("#bg").click()};
+if($("#add"))$("#add").onclick=()=>{const o=$("#o").value.trim(),d=$("#d").value.trim(),p=parseFloat($("#p").value),s=$("#s").value,er=$("#ce");
+if(!o||!d){er.textContent="Escribe origen y destino.";return}
+if(!(p>0)||p>70){er.textContent="El peso debe ser mayor a 0 y de máximo 70 kg.";return}
+const t=tarifa(s,p);cart.push({o,d,p,s,z:+$("#z").value,costo:t[3]});save();render()};
+document.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{cart.splice(+b.dataset.r,1);save();render()});
+if($("#clr"))$("#clr").onclick=()=>{cart=[];save();render()}}
+render();
+</script></body></html>
