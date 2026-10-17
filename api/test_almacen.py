@@ -107,3 +107,11 @@ def test_salida_de_producto_sin_existencia():
 def test_listar_productos_incluye_id():
     datos = client.get("/productos").json()
     assert datos["items"][0]["id"] == 1
+
+def test_listar_ubicaciones():
+    respuesta = client.get("/ubicaciones")
+    assert respuesta.status_code == 200
+    assert respuesta.json() == [
+        {"id": 1, "nombre": "Almacen A"},
+        {"id": 2, "nombre": "Almacen B"},
+    ]
