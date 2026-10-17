@@ -54,7 +54,8 @@ La API de inventario de la semana 4 usa el mismo puerto (`uvicorn main:app --rel
 
 | Método | Ruta | Qué hace | Éxito | Errores |
 |---|---|---|---|---|
-| GET | `/productos` | Lista productos con paginación y filtro opcional por categoría | 200 | 422 parámetros inválidos |
+| GET | `/productos` | Lista productos (con su `id`), con paginación y filtro opcional por categoría | 200 | 422 parámetros inválidos |
+| GET | `/ubicaciones` | Lista las ubicaciones con su `id` y su nombre | 200 | |
 | GET | `/productos/{codigo}/stock` | Stock total y por ubicación de un producto | 200 | 404 si no existe |
 | POST | `/movimientos` | Registra una entrada o salida y actualiza la existencia | 201 | 404 producto o ubicación inexistentes, 409 stock insuficiente, 422 datos inválidos |
 
@@ -69,6 +70,8 @@ Parámetros de `GET /productos`:
 Una página que no existe devuelve `items: []`, no un error.
 
 Ejemplo de cuerpo para `POST /movimientos`:
+
+Los `id` que pide este cuerpo se consultan con `GET /productos` (campo `id` de cada producto) y `GET /ubicaciones`.
 
 ```json
 {"producto_id": 6, "ubicacion_id": 1, "tipo": "salida", "cantidad": 5}
