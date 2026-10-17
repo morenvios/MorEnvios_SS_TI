@@ -34,7 +34,7 @@ def listar_productos(
 
     filas = conexion.execute(
         f"""
-        SELECT p.codigo, p.nombre, p.precio, c.nombre AS categoria
+        SELECT p.id, p.codigo, p.nombre, p.precio, c.nombre AS categoria
         FROM producto p
         JOIN categoria c ON c.id = p.categoria_id
         {filtros}
