@@ -57,6 +57,7 @@ La API de inventario de la semana 4 usa el mismo puerto (`uvicorn main:app --rel
 | GET | `/productos` | Lista productos con paginación y filtro opcional por categoría | 200 | 422 parámetros inválidos |
 | GET | `/productos/{codigo}/stock` | Stock total y por ubicación de un producto | 200 | 404 si no existe |
 | POST | `/movimientos` | Registra una entrada o salida y actualiza la existencia | 201 | 404 producto o ubicación inexistentes, 409 stock insuficiente, 422 datos inválidos |
+| GET | `/movimientos` | Historial de movimientos, del más reciente al más antiguo, con filtro opcional `?codigo=` | 200 | 404 si el código no existe |
 
 Parámetros de `GET /productos`:
 
