@@ -37,3 +37,21 @@ INSERT INTO movimiento (producto_id, ubicacion_id, tipo, cantidad) VALUES
     (5, 2, 'entrada', 25),
     (6, 1, 'entrada', 15),
     (7, 1, 'entrada', 30);
+
+INSERT INTO producto (codigo, nombre, precio, categoria_id) VALUES
+    ('PROD-009', 'Cinta de embalaje reforzada', 22.0, 1),
+    ('PROD-010', 'Sobres de burbuja 15x20', 4.5, 3),
+    ('PROD-011', 'Marcador industrial negro', 12.0, 2),
+    ('PROD-012', 'Fleje de plastico 100 m', 85.0, 1);
+
+INSERT INTO existencia (producto_id, ubicacion_id, cantidad) VALUES
+    (9, 1, 50),
+    (10, 2, 200),
+    (11, 2, 30),
+    (12, 1, 10);
+
+INSERT INTO movimiento (producto_id, ubicacion_id, tipo, cantidad) VALUES
+    (9, 1, 'entrada', 50),
+    (10, 2, 'entrada', 200),
+    (11, 2, 'entrada', 30),
+    (12, 1, 'entrada', 10);
