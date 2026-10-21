@@ -123,3 +123,30 @@ def stock_producto(codigo: str, conexion=Depends(obtener_conexion)):
 def test_listar_productos_incluye_id():
     datos = client.get("/productos").json()
     assert datos["items"][0]["id"] == 1
+
+@app.get("/movimientos")
+def listar_movimientos(codigo: str | None = None, conexion=Depends(obtener_conexion)):
+    filtros = ""
+    parametros = []
+    if codigo is not None:
+        existe = conexion.execute(
+            "SELECT 1 FROM producto WHERE codigo = ?", (codigo,)
+        ).fetchone()
+        if existe is None:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
+        filtros = "WHERE p.codigo = ?"
+        parametros.append(codigo)
+
+    filas = conexion.execute(
+        f"""
+        SELECT m.id, p.codigo, p.nombre AS producto, u.nombre AS ubicacion,
+               m.tipo, m.cantidad, m.fecha
+        FROM movimiento m
+        JOIN producto p ON p.id = m.producto_id
+        JOIN ubicacion u ON u.id = m.ubicacion_id
+        {filtros}
+        ORDER BY m.fecha DESC, m.id DESC
+        """,
+        parametros,
+    ).fetchall()
+    return [dict(fila) for fila in filas]

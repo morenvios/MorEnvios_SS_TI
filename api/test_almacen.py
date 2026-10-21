@@ -107,3 +107,38 @@ def test_salida_de_producto_sin_existencia():
 def test_listar_productos_incluye_id():
     datos = client.get("/productos").json()
     assert datos["items"][0]["id"] == 1
+
+def test_listar_movimientos():
+    respuesta = client.get("/movimientos")
+    assert respuesta.status_code == 200
+    datos = respuesta.json()
+    assert len(datos) == 9
+    assert datos[0]["codigo"] == "PROD-007"
+    assert set(datos[0]) >= {"codigo", "ubicacion", "tipo", "cantidad", "fecha"}
+
+
+def test_movimientos_filtrados_por_codigo():
+    datos = client.get("/movimientos", params={"codigo": "PROD-006"}).json()
+    assert len(datos) == 1
+    assert datos[0]["codigo"] == "PROD-006"
+
+
+def test_movimientos_mas_reciente_primero():
+    salida = {"producto_id": 6, "ubicacion_id": 1, "tipo": "salida", "cantidad": 5}
+    client.post("/movimientos", json=salida)
+    datos = client.get("/movimientos").json()
+    assert datos[0]["codigo"] == "PROD-006"
+    assert datos[0]["tipo"] == "salida"
+    assert datos[0]["cantidad"] == 5
+
+
+def test_movimientos_de_codigo_inexistente():
+    respuesta = client.get("/movimientos", params={"codigo": "PROD-999"})
+    assert respuesta.status_code == 404
+    assert respuesta.json()["detail"] == "Producto no encontrado"
+
+
+def test_movimientos_de_producto_sin_historial():
+    respuesta = client.get("/movimientos", params={"codigo": "PROD-008"})
+    assert respuesta.status_code == 200
+    assert respuesta.json() == []
