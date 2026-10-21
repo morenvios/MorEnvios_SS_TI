@@ -118,3 +118,20 @@ def stock_producto(codigo: str, conexion=Depends(obtener_conexion)):
         "stock_total": sum(f["cantidad"] for f in filas),
         "ubicaciones": [dict(f) for f in filas],
     }
+@app.get("/tienda/catalogo")
+def obtener_catalogo(conexion=Depends(obtener_conexion)):
+    consulta = """
+        SELECT 
+            p.id, 
+            p.codigo, 
+            p.nombre, 
+            p.precio, 
+            COALESCE(SUM(e.cantidad), 0) AS stock_total
+        FROM producto p
+        LEFT JOIN existencia e ON p.id = e.producto_id
+        GROUP BY p.id, p.codigo, p.nombre, p.precio
+        ORDER BY p.id
+    """
+    filas = conexion.execute(consulta).fetchall()
+    
+    return [dict(fila) for fila in filas]
