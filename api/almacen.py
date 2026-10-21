@@ -118,6 +118,12 @@ def stock_producto(codigo: str, conexion=Depends(obtener_conexion)):
         "stock_total": sum(f["cantidad"] for f in filas),
         "ubicaciones": [dict(f) for f in filas],
     }
+
+@app.get("/ubicaciones")
+def listar_ubicaciones(conexion=Depends(obtener_conexion)):
+    filas = conexion.execute("SELECT id, nombre FROM ubicacion ORDER BY id").fetchall()
+    return [dict(fila) for fila in filas]
+
 @app.get("/tienda/catalogo")
 def obtener_catalogo(conexion=Depends(obtener_conexion)):
     consulta = """
