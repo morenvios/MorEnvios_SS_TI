@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda - MorEnvíos</title>
+  <!-- Enlazamos tu hoja de estilos maestra -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+  <!-- Misma cabecera que en index.html -->
+  <header class="cabecera">
+    <div class="contenedor cabecera__interior">
+      <a class="logo" href="index.html">MorEnvíos</a>
+      <nav aria-label="Navegación principal">
+        <ul class="menu">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="servicios.html">Servicios</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+          <!-- Agregamos la Tienda al menú -->
+          <li><a href="tienda.html" aria-current="page">Tienda</a></li> 
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="seccion">
+      <div class="contenedor">
+        <h1>Catálogo de Productos</h1>
+        <p>Materiales de empaque, etiquetado y protección para tus envíos.</p>
+        
+        <!-- Aquí JS inyectará las tarjetas -->
+        <div id="contenedor-productos" class="tarjetas" style="margin-top: var(--esp-3);">
+          <p>Cargando productos...</p>
+        </div>
+
+        <!-- Panel del carrito unificado con el estilo -->
+        <div style="margin-top: var(--esp-5); padding: var(--esp-3); background: var(--color-fondo-alt); border-radius: var(--radio);">
+            <h2>Tu Carrito</h2>
+            <div id="items-carrito">
+                <p>El carrito está vacío.</p>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--color-borde); margin: var(--esp-2) 0;">
+            <h3>Total: $<span id="total-carrito">0.00</span></h3>
+            <!-- Usamos la clase .boton de tu CSS -->
+            <button class="boton" id="btn-checkout" onclick="procesarCompra()">
+                Finalizar Compra (Simulada)
+            </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <p>MorEnvíos — Servicios de logística, recolección y entregas del estado de Morelos.</p>
+      <address>
+        Tel: <a href="tel:+527770000000">777 000 0000</a> ·
+        <a href="mailto:contacto@morenvios.com">contacto@morenvios.com</a>
+      </address>
+    </div>
+  </footer>
+
+  <!-- Script al final. Asegúrate de que la ruta sea correcta según dónde guardes tienda.js -->
+  <script src="../js/tienda.js"></script>
+</body>
+</html>
