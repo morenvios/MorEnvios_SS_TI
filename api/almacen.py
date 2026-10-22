@@ -20,7 +20,6 @@ class MovimientoNuevo(BaseModel):
     tipo: Literal["entrada", "salida"]
     cantidad: int = Field(gt=0)
 
-
 @app.get("/productos")
 def listar_productos(
     pagina: int = Query(1, ge=1),
@@ -148,3 +147,49 @@ def obtener_catalogo(conexion=Depends(obtener_conexion)):
     filas = conexion.execute(consulta).fetchall()
     
     return [dict(fila) for fila in filas]
+
+class ItemCarrito(BaseModel):
+    producto_id: int
+    cantidad: int
+
+@app.post("/tienda/checkout", status_code=201)
+def procesar_checkout(carrito: list[ItemCarrito], conexion=Depends(obtener_conexion)):
+    # 1. Primera pasada: Validar que HAYA stock de TODO antes de tocar la base de datos
+    for item in carrito:
+        existencias = conexion.execute(
+            "SELECT cantidad FROM existencia WHERE producto_id = ?",
+            (item.producto_id,)
+        ).fetchall()
+        
+        stock_total = sum(e["cantidad"] for e in existencias)
+        
+        if stock_total < item.cantidad:
+            raise HTTPException(
+                status_code=409, 
+                detail=f"Stock insuficiente del producto ID {item.producto_id}. Solicitado: {item.cantidad}, Disponible: {stock_total}"
+            )
+            
+    # 2. Segunda pasada: Si pasó la validación, ejecutamos la transacción
+    with conexion:
+        for item in carrito:
+            # Buscamos de qué almacén descontar (el primero que tenga suficiente)
+            existe = conexion.execute(
+                "SELECT ubicacion_id FROM existencia WHERE producto_id = ? AND cantidad >= ? LIMIT 1",
+                (item.producto_id, item.cantidad)
+            ).fetchone()
+            
+            ubicacion_id = existe["ubicacion_id"]
+            
+            # Registrar el movimiento de salida
+            conexion.execute(
+                "INSERT INTO movimiento (producto_id, ubicacion_id, tipo, cantidad) VALUES (?, ?, 'salida', ?)",
+                (item.producto_id, ubicacion_id, item.cantidad)
+            )
+            
+            # Descontar el stock
+            conexion.execute(
+                "UPDATE existencia SET cantidad = cantidad - ? WHERE producto_id = ? AND ubicacion_id = ?",
+                (item.cantidad, item.producto_id, ubicacion_id)
+            )
+            
+    return {"mensaje": "Compra procesada con éxito", "items_procesados": len(carrito)}
