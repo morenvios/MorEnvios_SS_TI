@@ -4,9 +4,16 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from db import obtener_conexion
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API de almacen")
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 class MovimientoNuevo(BaseModel):
     producto_id: int
     ubicacion_id: int
