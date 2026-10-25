@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Body
@@ -6,7 +7,14 @@ from pydantic import BaseModel, Field
 from db import obtener_conexion
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="API de almacen")
+es_desarrollo = os.getenv("ENTORNO", "desarrollo") == "desarrollo"
+
+app = FastAPI(
+    title="API de almacen",
+    docs_url="/docs" if es_desarrollo else None,
+    redoc_url="/redoc" if es_desarrollo else None
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
