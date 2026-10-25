@@ -1,6 +1,6 @@
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Body
 from pydantic import BaseModel, Field
 
 from db import obtener_conexion
@@ -150,11 +150,10 @@ def obtener_catalogo(conexion=Depends(obtener_conexion)):
 
 class ItemCarrito(BaseModel):
     producto_id: int
-    cantidad: int
+    cantidad: int = Field(gt=0, le=1000) # gt=0 evita negativos, le=1000 pone un límite
 
 @app.post("/tienda/checkout", status_code=201)
-def procesar_checkout(carrito: list[ItemCarrito], conexion=Depends(obtener_conexion)):
-    # 1. Primera pasada: Validar que HAYA stock de TODO antes de tocar la base de datos
+def procesar_checkout(carrito: list[ItemCarrito] = Body(..., min_length=1), conexion=Depends(obtener_conexion)):
     for item in carrito:
         existencias = conexion.execute(
             "SELECT cantidad FROM existencia WHERE producto_id = ?",
@@ -169,10 +168,8 @@ def procesar_checkout(carrito: list[ItemCarrito], conexion=Depends(obtener_conex
                 detail=f"Stock insuficiente del producto ID {item.producto_id}. Solicitado: {item.cantidad}, Disponible: {stock_total}"
             )
             
-    # 2. Segunda pasada: Si pasó la validación, ejecutamos la transacción
     with conexion:
         for item in carrito:
-            # Buscamos de qué almacén descontar (el primero que tenga suficiente)
             existe = conexion.execute(
                 "SELECT ubicacion_id FROM existencia WHERE producto_id = ? AND cantidad >= ? LIMIT 1",
                 (item.producto_id, item.cantidad)
