@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 from fastapi import Depends, FastAPI, HTTPException, Query
@@ -7,15 +8,14 @@ from db import obtener_conexion
 
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="API de almacen")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # En producción esto se restringe, pero para pruebas está bien
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+es_desarrollo = os.getenv("ENTORNO", "desarrollo") == "desarrollo"
 
+app = FastAPI(
+    title="API de almacen",
+    docs_url="/docs" if es_desarrollo else None,
+    redoc_url="/redoc" if es_desarrollo else None
+
+)
 
 @app.get("/productos")
 def listar_productos(
