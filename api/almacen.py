@@ -1,11 +1,10 @@
 import os
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Body
 from pydantic import BaseModel, Field
 
 from db import obtener_conexion
-
 from fastapi.middleware.cors import CORSMiddleware
 
 es_desarrollo = os.getenv("ENTORNO", "desarrollo") == "desarrollo"
@@ -14,8 +13,20 @@ app = FastAPI(
     title="API de almacen",
     docs_url="/docs" if es_desarrollo else None,
     redoc_url="/redoc" if es_desarrollo else None
-
 )
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+class MovimientoNuevo(BaseModel):
+    producto_id: int
+    ubicacion_id: int
+    tipo: Literal["entrada", "salida"]
+    cantidad: int = Field(gt=0)
 
 @app.get("/productos")
 def listar_productos(
@@ -37,7 +48,7 @@ def listar_productos(
 
     filas = conexion.execute(
         f"""
-        SELECT p.id, p.codigo, p.nombre, p.precio, c.nombre AS categoria
+        SELECT p.codigo, p.nombre, p.precio, c.nombre AS categoria
         FROM producto p
         JOIN categoria c ON c.id = p.categoria_id
         {filtros}
@@ -53,12 +64,6 @@ def listar_productos(
         "total": total,
         "items": [dict(fila) for fila in filas],
     }
-
-class MovimientoNuevo(BaseModel):
-    producto_id: int
-    ubicacion_id: int
-    tipo: Literal["entrada", "salida"]
-    cantidad: int = Field(gt=0)
 
 @app.post("/movimientos", status_code=201)
 def registrar_movimiento(mov: MovimientoNuevo, conexion=Depends(obtener_conexion)):
@@ -128,31 +133,9 @@ def stock_producto(codigo: str, conexion=Depends(obtener_conexion)):
         "ubicaciones": [dict(f) for f in filas],
     }
 
-@app.get("/movimientos")
-def listar_movimientos(codigo: str | None = None, conexion=Depends(obtener_conexion)):
-    filtros = ""
-    parametros = []
-    if codigo is not None:
-        existe = conexion.execute(
-            "SELECT 1 FROM producto WHERE codigo = ?", (codigo,)
-        ).fetchone()
-        if existe is None:
-            raise HTTPException(status_code=404, detail="Producto no encontrado")
-        filtros = "WHERE p.codigo = ?"
-        parametros.append(codigo)
-
-    filas = conexion.execute(
-        f"""
-        SELECT m.id, p.codigo, p.nombre AS producto, u.nombre AS ubicacion,
-               m.tipo, m.cantidad, m.fecha
-        FROM movimiento m
-        JOIN producto p ON p.id = m.producto_id
-        JOIN ubicacion u ON u.id = m.ubicacion_id
-        {filtros}
-        ORDER BY m.fecha DESC, m.id DESC
-        """,
-        parametros,
-    ).fetchall()
+@app.get("/ubicaciones")
+def listar_ubicaciones(conexion=Depends(obtener_conexion)):
+    filas = conexion.execute("SELECT id, nombre FROM ubicacion ORDER BY id").fetchall()
     return [dict(fila) for fila in filas]
 
 @app.get("/tienda/catalogo")
@@ -175,15 +158,13 @@ def obtener_catalogo(conexion=Depends(obtener_conexion)):
 
 class ItemCarrito(BaseModel):
     producto_id: int
-    cantidad: int
+    cantidad: int = Field(gt=0, le=1000) # gt=0 evita negativos, le=1000 pone un límite
 
 @app.post("/tienda/checkout", status_code=201)
-def procesar_checkout(carrito: list[ItemCarrito], conexion=Depends(obtener_conexion)):
-    # Verificamos todo el stock ANTES de tocar la base de datos
+def procesar_checkout(carrito: list[ItemCarrito] = Body(..., min_length=1), conexion=Depends(obtener_conexion)):
     for item in carrito:
-        # Buscamos en qué ubicación hay stock para este producto
         existencias = conexion.execute(
-            "SELECT ubicacion_id, cantidad FROM existencia WHERE producto_id = ?",
+            "SELECT cantidad FROM existencia WHERE producto_id = ?",
             (item.producto_id,)
         ).fetchall()
         
@@ -192,28 +173,25 @@ def procesar_checkout(carrito: list[ItemCarrito], conexion=Depends(obtener_conex
         if stock_total < item.cantidad:
             raise HTTPException(
                 status_code=409, 
-                detail=f"No hay stock suficiente del producto ID {item.producto_id}. Solicitado: {item.cantidad}, Disponible: {stock_total}"
+                detail=f"Stock insuficiente del producto ID {item.producto_id}. Solicitado: {item.cantidad}, Disponible: {stock_total}"
             )
             
-    # Si todo tiene stock, procedemos a hacer la transacción
     with conexion:
         for item in carrito:
-            # Para este ejercicio, descontaremos del primer almacén que tenga stock
-            # (En un sistema real, se elegiría el almacén más cercano o el usuario lo elegiría)
             existe = conexion.execute(
-                "SELECT ubicacion_id, cantidad FROM existencia WHERE producto_id = ? AND cantidad >= ? LIMIT 1",
+                "SELECT ubicacion_id FROM existencia WHERE producto_id = ? AND cantidad >= ? LIMIT 1",
                 (item.producto_id, item.cantidad)
             ).fetchone()
             
             ubicacion_id = existe["ubicacion_id"]
             
-            # Registramos la salida
+            # Registrar el movimiento de salida
             conexion.execute(
                 "INSERT INTO movimiento (producto_id, ubicacion_id, tipo, cantidad) VALUES (?, ?, 'salida', ?)",
                 (item.producto_id, ubicacion_id, item.cantidad)
             )
             
-            # Descontamos la existencia
+            # Descontar el stock
             conexion.execute(
                 "UPDATE existencia SET cantidad = cantidad - ? WHERE producto_id = ? AND ubicacion_id = ?",
                 (item.cantidad, item.producto_id, ubicacion_id)
