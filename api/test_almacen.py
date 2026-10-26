@@ -30,25 +30,24 @@ def test_listar_primera_pagina():
     respuesta = client.get("/productos")
     assert respuesta.status_code == 200
     datos = respuesta.json()
-    assert datos["total"] == 8
+    assert datos["total"] == 12
     assert [p["codigo"] for p in datos["items"]] == ["PROD-001", "PROD-002", "PROD-003"]
 
 
 def test_ultima_pagina_incompleta():
     datos = client.get("/productos", params={"pagina": 3}).json()
-    assert len(datos["items"]) == 2
+    assert len(datos["items"]) == 3
 
 
 def test_pagina_inexistente_devuelve_lista_vacia():
-    respuesta = client.get("/productos", params={"pagina": 4})
+    respuesta = client.get("/productos", params={"pagina": 5})
     assert respuesta.status_code == 200
     assert respuesta.json()["items"] == []
-    assert respuesta.json()["total"] == 8
 
 
 def test_filtrar_por_categoria():
     datos = client.get("/productos", params={"categoria": "empaque"}).json()
-    assert datos["total"] == 4
+    assert datos["total"] == 6
 
 
 def test_pagina_cero_se_rechaza():

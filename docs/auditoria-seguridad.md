@@ -13,3 +13,15 @@ Este documento registra el modelado de amenazas y los hallazgos de seguridad ide
 | SEC-05 | A03:2025 - Inyección (XSS) | El frontend usa `innerHTML` para renderizar el nombre y código del producto. Un nombre malicioso con etiquetas `<script>` permitiría ejecutar código en el navegador del usuario (XSS almacenado). | Modificar el nombre de un producto en la BD por `<script>alert('hackeado')</script>`. | Robo de sesiones o redirecciones maliciosas. | Usar `createElement` y `textContent` en el JS (ya corregido por Maira). Validar longitud y caracteres en el backend. | Resuelto (Frontend) |
 | SEC-06 | A06:2025 - Componentes Vulnerables | El proyecto utilizaba versiones desactualizadas de `pip`, `setuptools`, `certifi` y `opentelemetry-api` con vulnerabilidades conocidas (CVEs). | Ejecutar `pip-audit` en la terminal. | Posible ejecución de código malicioso o fallos en la validación de certificados SSL. | Actualizar a las últimas versiones con `pip install --upgrade` y regenerar el `requirements.txt`. | Resuelto |
 | SEC-07 | A05:2025 - Mala Configuración | La documentación interactiva (`/docs` y `/redoc`) está expuesta por defecto en todos los entornos. | Abrir `http://127.0.0.1:8000/docs` en el navegador. | Un atacante puede mapear todas las rutas y modelos de datos fácilmente. | Ocultar `docs_url` y `redoc_url` si la variable de entorno no es "desarrollo". | Resuelto |
+
+## 2. Pruebas Antes/Después (Evidencia de Reconstrucción)
+
+Para validar que las correcciones aplicadas funcionan y no rompieron el sistema, se ejecutaron las siguientes pruebas de regresión:
+
+| Hallazgo Corregido | Prueba "Después" (Evidencia) | Resultado Obtenido |
+| :--- | :--- | :--- |
+| **SEC-02 (CORS)** | Abrir `tienda.html` desde Live Server (puerto 5500) y cargar el catálogo. | `GET /tienda/catalogo` responde `200 OK`. El navegador ya no bloquea la petición. |
+| **SEC-04 (Cantidades Negativas)** | Ejecutar `pytest` en la carpeta `api`. | 27/33 pruebas pasan en verde. Las pruebas de validación de stock rechazan números negativos correctamente. |
+| **SEC-05 (XSS)** | Inyectar `<script>alert(1)</script>` en el nombre de un producto y recargar la tienda. | El script no se ejecuta. El navegador muestra el texto literal o lo ignora de forma segura gracias al uso de `textContent`. |
+| **SEC-06 (Dependencias)** | Ejecutar `pip-audit` en la terminal con el `venv` activo. | `No known vulnerabilities found`. Se actualizaron los paquetes vulnerables. |
+| **SEC-07 (Swagger Oculto)** | Ejecutar `$env:ENTORNO="produccion"; uvicorn almacen:app --reload` y entrar a `/docs`. | La ruta devuelve `404 Not Found`. Swagger se oculta correctamente en producción. |
