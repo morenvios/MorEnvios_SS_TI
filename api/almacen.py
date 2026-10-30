@@ -7,6 +7,8 @@ from pydantic import BaseModel, Field
 from db import obtener_conexion
 from fastapi.middleware.cors import CORSMiddleware
 
+from ia_busqueda import router as ia_router
+
 es_desarrollo = os.getenv("ENTORNO", "desarrollo") == "desarrollo"
 
 app = FastAPI(
@@ -22,6 +24,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(ia_router)
 class MovimientoNuevo(BaseModel):
     producto_id: int
     ubicacion_id: int
