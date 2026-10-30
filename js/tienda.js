@@ -1,10 +1,9 @@
+console.log("¡El archivo tienda.js se cargó correctamente!");
 const API_URL = "http://127.0.0.1:8000/tienda/catalogo";
 const contenedor = document.getElementById("contenedor-productos");
 
-// --- 1. ESTADO DEL CARRITO ---
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-// --- 2. CARGAR CATÁLOGO ---
 async function cargarProductos() {
     try {
         const respuesta = await fetch(API_URL);
@@ -21,7 +20,6 @@ async function cargarProductos() {
             const botonDeshabilitado = sinStock ? "disabled" : "";
             const textoBoton = sinStock ? "Sin stock" : "Agregar al carrito";
 
-            // ¡OJO AQUÍ! Agregamos el evento onclick para que llame a agregarAlCarrito
             tarjeta.innerHTML = `
                 <h3>${prod.nombre}</h3>
                 <p style="font-size: 0.9em; color: var(--color-texto-suave);">Código: ${prod.codigo}</p>
@@ -38,7 +36,6 @@ async function cargarProductos() {
     }
 }
 
-// --- 3. AGREGAR AL CARRITO ---
 function agregarAlCarrito(id, nombre, precio, stockTotal) {
     const productoExistente = carrito.find(item => item.id === id);
     
@@ -55,13 +52,12 @@ function agregarAlCarrito(id, nombre, precio, stockTotal) {
     guardarYActualizar();
 }
 
-// --- 4. DIBUJAR EL CARRITO Y TOTALES ---
 function guardarYActualizar() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     
     const contenedorItems = document.getElementById("items-carrito");
     const spanTotal = document.getElementById("total-carrito");
-    const contadorHeader = document.getElementById("contador-carrito"); // El del header
+    const contadorHeader = document.getElementById("contador-carrito");
     
     contenedorItems.innerHTML = ""; 
     
@@ -97,20 +93,17 @@ function guardarYActualizar() {
     if(contadorHeader) contadorHeader.textContent = totalItems;
 }
 
-// --- 5. ELIMINAR DEL CARRITO ---
 function eliminarDelCarrito(id) {
     carrito = carrito.filter(item => item.id !== id);
     guardarYActualizar();
 }
 
-// --- 6. CHECKOUT (MIÉRCOLES) ---
 async function procesarCompra() {
     if (carrito.length === 0) {
         alert("Tu carrito está vacío. Agrega productos primero.");
         return;
     }
 
-    // Preparamos los datos para la API
     const itemsParaEnviar = carrito.map(item => ({
         producto_id: item.id,
         cantidad: item.cantidad
@@ -135,13 +128,64 @@ async function procesarCompra() {
         carrito = [];
         localStorage.setItem("carrito", JSON.stringify(carrito));
         guardarYActualizar(); 
-        cargarProductos(); // Refresca el stock en pantalla
+        cargarProductos();
 
     } catch (error) {
-        alert("❌ " + error.message);
+        alert("X " + error.message);
     }
 }
 
-// --- INICIALIZAR ---
+async function buscarConIA() {
+    const texto = document.getElementById("buscador-ia").value;
+    const mensaje = document.getElementById("mensaje-ia");
+    const contenedor = document.getElementById("contenedor-productos");
+    
+    if (!texto.trim()) {
+        alert("Por favor, escribe lo que necesitas buscar.");
+        return;
+    }
+
+    mensaje.textContent = "Buscando...";
+    contenedor.innerHTML = "";
+
+    try {
+        const respuesta = await fetch("http://127.0.0.1:8000/tienda/busqueda-ia", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto: texto })
+        });
+
+        const datos = await respuesta.json();
+        
+        if (datos.metodo.includes("Fallback")) {
+            mensaje.textContent = `La IA no está disponible. Mostrando resultados tradicionales para: "${texto}"`;
+            mensaje.style.color = "orange";
+        } else {
+            mensaje.textContent = `La IA entendió que buscas: "${datos.palabra_clave_usada}"`;
+            mensaje.style.color = "green";
+        }
+
+        if (datos.productos.length === 0) {
+            contenedor.innerHTML = "<p>No se encontraron productos para tu búsqueda.</p>";
+            return;
+        }
+
+        datos.productos.forEach(prod => {
+            const tarjeta = document.createElement("div");
+            tarjeta.className = "tarjeta";
+            tarjeta.innerHTML = `
+                <h3>${prod.nombre}</h3>
+                <p style="font-size: 0.9em; color: var(--color-texto-suave);">Código: ${prod.codigo}</p>
+                <p>Precio: <strong style="color: var(--color-verde);">$${prod.precio.toFixed(2)}</strong></p>
+            `;
+            contenedor.appendChild(tarjeta);
+        });
+
+    } catch (error) {
+        mensaje.textContent = "Error al conectar con el servidor.";
+        mensaje.style.color = "red";
+    }
+}
+
 cargarProductos();
 guardarYActualizar();
