@@ -20,19 +20,27 @@
           <li><a href="servicios.html">Servicios</a></li>
           <li><a href="nosotros.html">Nosotros</a></li>
           <li><a href="contacto.html">Contacto</a></li>
-          <!-- Agregamos la Tienda al menú -->
           <li><a href="tienda.html" aria-current="page">Tienda</a></li> 
         </ul>
       </nav>
     </div>
   </header>
 
-  <main id="contenido">
+    <main id="contenido">
     <section class="seccion">
       <div class="contenedor">
         <h1>Catálogo de Productos</h1>
         <p>Materiales de empaque, etiquetado y protección para tus envíos.</p>
         
+        <div class="buscador-ia">
+            <label for="buscador-ia" class="buscador-ia__label"> ¿Qué necesitas? (Búscalo con lenguaje natural)</label>
+            <div class="buscador-ia__form">
+                <input type="text" id="buscador-ia" class="buscador-ia__input" placeholder="Ej. Necesito proteger cosas frágiles">
+                <button class="boton buscador-ia__btn" onclick="buscarConIA()">Buscar</button>
+            </div>
+            <p id="mensaje-ia" class="buscador-ia__mensaje"></p>
+        </div>
+
         <div id="contenedor-productos" class="tarjetas" style="margin-top: var(--esp-3);">
           <p>Cargando productos...</p>
         </div>

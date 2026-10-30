@@ -134,5 +134,57 @@ async function procesarCompra() {
     }
 }
 
+async function buscarConIA() {
+    const texto = document.getElementById("buscador-ia").value;
+    const mensaje = document.getElementById("mensaje-ia");
+    const contenedor = document.getElementById("contenedor-productos");
+    
+    if (!texto.trim()) {
+        alert("Por favor, escribe lo que necesitas buscar.");
+        return;
+    }
+
+    mensaje.textContent = "Buscando...";
+    contenedor.innerHTML = "";
+
+    try {
+        const respuesta = await fetch("http://127.0.0.1:8000/tienda/busqueda-ia", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto: texto })
+        });
+
+        const datos = await respuesta.json();
+        
+        if (datos.metodo.includes("Fallback")) {
+            mensaje.textContent = `La IA no está disponible. Mostrando resultados tradicionales para: "${texto}"`;
+            mensaje.style.color = "orange";
+        } else {
+            mensaje.textContent = `La IA entendió que buscas: "${datos.palabra_clave_usada}"`;
+            mensaje.style.color = "green";
+        }
+
+        if (datos.productos.length === 0) {
+            contenedor.innerHTML = "<p>No se encontraron productos para tu búsqueda.</p>";
+            return;
+        }
+
+        datos.productos.forEach(prod => {
+            const tarjeta = document.createElement("div");
+            tarjeta.className = "tarjeta";
+            tarjeta.innerHTML = `
+                <h3>${prod.nombre}</h3>
+                <p style="font-size: 0.9em; color: var(--color-texto-suave);">Código: ${prod.codigo}</p>
+                <p>Precio: <strong style="color: var(--color-verde);">$${prod.precio.toFixed(2)}</strong></p>
+            `;
+            contenedor.appendChild(tarjeta);
+        });
+
+    } catch (error) {
+        mensaje.textContent = "Error al conectar con el servidor.";
+        mensaje.style.color = "red";
+    }
+}
+
 cargarProductos();
 guardarYActualizar();

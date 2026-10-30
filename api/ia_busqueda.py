@@ -25,7 +25,7 @@ def buscar_con_ia(req: BusquedaRequest, conexion=Depends(obtener_conexion)):
     
     try:
         respuesta = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": prompt_sistema},
                 {"role": "user", "content": req.texto}
